@@ -17,17 +17,18 @@ case class FinanceHistoricalData(items: List[FinanceHistoricalData.Item]) {
     .map(_.close) // use only close price
 
   lazy val returns: List[BigDecimal] = {
-    val prices =
-      if (dailyPrices.length % 2 == 0) dailyPrices
-      else dailyPrices.tail // drop oldest day
-    prices.grouped(2).toList map {
-      case List(yesterday, today) =>
+    dailyPrices.zip(dailyPrices.tail) map {
+      case (yesterday, today) =>
         (today - yesterday) / yesterday
     }
   }
 
-  lazy val meanReturn: BigDecimal =
-    returns.sum / returns.length
+  lazy val meanReturn: BigDecimal = {
+    val (sum, count) = returns.foldLeft((BigDecimal(0), 0)) {
+      case ((s, c), x) => (s + x, c + 1)
+    }
+    sum / count
+  }
 }
 
 object FinanceHistoricalData {

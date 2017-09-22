@@ -8,6 +8,8 @@ import utest._
 
 object FinanceHistoricalDataTests  extends TestSuite {
 
+  private final val E = BigDecimal(0.01)
+
   private val csv = CSV(
     List(
       List("Date", "Open", "High", "Low", "Close", "Volume"),
@@ -79,14 +81,17 @@ object FinanceHistoricalDataTests  extends TestSuite {
 
     "should collect daily returns" - {
       val result = fhd.returns
-      val pattern = List[BigDecimal](1)
-      assert(result == pattern)
+      val a = BigDecimal(0.66)
+      val b = BigDecimal(1)
+      assert(result.length == 2)
+      assert((result(0) - a).abs < E)
+      assert((result(1) - b).abs < E)
     }
 
     "should calculate mean return" - {
       val result = fhd.meanReturn
-      val pattern = BigDecimal(1)
-      assert(result == pattern)
+      val pattern = BigDecimal(0.83)
+      assert((result - pattern).abs < E)
     }
   }
 
